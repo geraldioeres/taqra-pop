@@ -38,4 +38,4 @@ In the window: ←/→ for previous/next ayah, Space to play/pause, `M` to mute,
 
 ## Data
 
-The text, translations and audio come from [alquran.cloud](https://alquran.cloud) and `cdn.islamic.network`. Each surah is downloaded the first time you open it and then cached, so text works offline after that. Audio is streamed and always needs a connection.
+The text, translations and audio come from [alquran.cloud](https://alquran.cloud) and `cdn.islamic.network`. The teaching recitations (Husary Muallim, Minshawi Teacher) come from [everyayah.com](https://everyayah.com). Under Settings you can pick slow reciters (Ibrahim Al-Akhdar and the Husary and Minshawi Mujawwad recitations) and set the recitation speed from 0.5× to 1.25× without changing the pitch. Each surah is downloaded the first time you open it and then cached, so text works offline after that. Audio is streamed and always needs a connection.

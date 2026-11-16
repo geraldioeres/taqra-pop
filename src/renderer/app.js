@@ -9,6 +9,7 @@ const DEFAULTS = {
   surah: 1, ayah: 1,
   translation: 'id.indonesian',
   reciter: 'ar.alafasy',
+  speed: 1,
   arSize: 28, trSize: 14,
   theme: 'dark',
   autoNext: true,
@@ -200,10 +201,28 @@ let repeatsLeft = 0;
 const preloader = new Audio();
 preloader.preload = 'auto';
 
+// Reciters prefixed "everyayah:" come from everyayah.com, whose per-ayah files
+// follow a fixed SSSAAA.mp3 pattern, so no API lookup is needed.
+const EVERYAYAH = 'everyayah:';
+const pad3 = (n) => String(n).padStart(3, '0');
 async function audioUrlFor(surah, ayah) {
+  if (settings.reciter.startsWith(EVERYAYAH)) {
+    const folder = settings.reciter.slice(EVERYAYAH.length);
+    return `https://everyayah.com/data/${folder}/${pad3(surah)}${pad3(ayah)}.mp3`;
+  }
   const urls = await loadEdition(settings.reciter, surah);
   return urls[ayah - 1];
 }
+
+// Slow down or speed up any reciter without changing the pitch. Loading a new
+// file resets playbackRate to defaultPlaybackRate, so set both.
+function applySpeed() {
+  const rate = Number(settings.speed) || 1;
+  audio.defaultPlaybackRate = rate;
+  audio.playbackRate = rate;
+  audio.preservesPitch = true;
+}
+applySpeed();
 
 async function playCurrent() {
   if (!current) return;
@@ -426,6 +445,7 @@ bindSetting('optTranslation', 'translation', { onChange: () => show(settings.sur
 bindSetting('optReciter', 'reciter', {
   onChange: () => { const was = audio.wantPlaying; audio.pause(); audio.removeAttribute('src'); if (was) playCurrent(); },
 });
+bindSetting('optSpeed', 'speed', { parse: Number, onChange: applySpeed });
 bindSetting('optArSize', 'arSize', { parse: Number });
 bindSetting('optTrSize', 'trSize', { parse: Number });
 bindSetting('optTheme', 'theme');
