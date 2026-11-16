@@ -14,6 +14,8 @@ const DEFAULTS = {
   autoNext: true,
   autoHide: false,
   repeat: 1,
+  volume: 0.8,
+  muted: false,
 };
 const store = {
   get(key, fallback) {
@@ -262,6 +264,39 @@ function updatePlayButton() {
   $('btnPlay').title = playing ? 'Pause (Space)' : 'Play recitation (Space)';
 }
 
+// ---------- volume ----------
+function applyVolume() {
+  audio.volume = settings.volume;
+  audio.muted = settings.muted;
+  $('volume').value = settings.volume;
+  const silent = settings.muted || settings.volume === 0;
+  $('btnMute').textContent = silent ? '🔇' : settings.volume < 0.5 ? '🔉' : '🔊';
+  $('btnMute').title = silent ? 'Unmute (M)' : 'Mute (M)';
+  $('volume').title = `Volume ${Math.round(settings.volume * 100)}%`;
+}
+function toggleMute() {
+  settings.muted = !settings.muted;
+  // Unmuting at 0% would still be silent, so bring it back to a usable level.
+  if (!settings.muted && settings.volume === 0) settings.volume = 0.5;
+  saveSettings();
+  applyVolume();
+}
+$('btnMute').addEventListener('click', toggleMute);
+$('volume').addEventListener('input', (e) => {
+  settings.volume = Number(e.target.value);
+  settings.muted = false;
+  saveSettings();
+  applyVolume();
+});
+// Scroll the mouse wheel over the slider to nudge the volume.
+$('volume').addEventListener('wheel', (e) => {
+  e.preventDefault();
+  settings.volume = Math.min(1, Math.max(0, Math.round((settings.volume + (e.deltaY < 0 ? 0.05 : -0.05)) * 100) / 100));
+  settings.muted = false;
+  saveSettings();
+  applyVolume();
+}, { passive: false });
+
 const REPEATS = [1, 2, 3, 5, 10, Infinity];
 function updateRepeatButton() {
   $('btnRepeat').textContent = settings.repeat === Infinity ? '×∞' : `×${settings.repeat}`;
@@ -269,10 +304,10 @@ function updateRepeatButton() {
 }
 
 // ---------- panels ----------
-function openPanel(id) {
+function openPanel(id, focus) {
   for (const p of document.querySelectorAll('.panel')) p.hidden = p.id !== id;
   document.body.classList.add('panel-open');
-  if (id === 'jump') openJump();
+  if (id === 'jump') openJump(focus);
 }
 function closePanels() {
   for (const p of document.querySelectorAll('.panel')) p.hidden = true;
@@ -281,15 +316,41 @@ function closePanels() {
 const anyPanelOpen = () => [...document.querySelectorAll('.panel')].some((p) => !p.hidden);
 
 let jumpSurah = 1;
-function openJump() {
+function openJump(focus = 'surah') {
   jumpSurah = settings.surah;
   $('surahFilter').value = '';
   renderSurahList();
   $('ayahInput').value = settings.ayah;
   updateAyahMax();
-  $('surahFilter').focus();
+  $('pageInput').value = current?.row.p ?? 1;
+  updatePageStart();
   $('surahList').querySelector('.sel')?.scrollIntoView({ block: 'center' });
+  if (focus === 'page') { $('pageInput').focus(); $('pageInput').select(); }
+  else $('surahFilter').focus();
 }
+
+// ---------- go to page (Madani mushaf, 604 pages) ----------
+function pageNumber() {
+  const n = parseInt($('pageInput').value, 10);
+  return Number.isFinite(n) ? Math.max(1, Math.min(window.PAGES.length, n)) : null;
+}
+function updatePageStart() {
+  const n = pageNumber();
+  if (!n) { $('pageStart').textContent = ''; return; }
+  const [s, a] = window.PAGES[n - 1];
+  $('pageStart').textContent = `· starts ${surahMeta(s).en} ${s}:${a}`;
+}
+function goToPage() {
+  const n = pageNumber();
+  if (!n) { $('pageInput').focus(); return; }
+  const [s, a] = window.PAGES[n - 1];
+  closePanels();
+  pause();
+  show(s, a);
+}
+$('pageInput').addEventListener('input', updatePageStart);
+$('pageInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); goToPage(); } });
+$('btnGoPage').addEventListener('click', goToPage);
 function renderSurahList() {
   const q = $('surahFilter').value.trim().toLowerCase().replace(/[-'\s]/g, '');
   const list = $('surahList');
@@ -383,7 +444,7 @@ function setPinUI(v) {
 $('btnPin').addEventListener('click', () => { setPinUI(!pinned); window.pop.setPinned(pinned); });
 $('btnSettings').addEventListener('click', () => ($('settings').hidden ? openPanel('settings') : closePanels()));
 $('btnMin').addEventListener('click', () => window.pop.minimize());
-$('btnHide').addEventListener('click', () => window.pop.hide());
+$('btnClose').addEventListener('click', () => window.pop.quit());
 $('where').addEventListener('click', () => ($('jump').hidden ? openPanel('jump') : closePanels()));
 
 $('btnPrev').addEventListener('click', () => step(-1));
@@ -407,6 +468,8 @@ document.addEventListener('keydown', (e) => {
     case 'ArrowLeft': case 'ArrowUp': case 'PageUp': step(-1); break;
     case ' ': togglePlay(); break;
     case 'g': case 'G': openPanel('jump'); break;
+    case 'p': case 'P': openPanel('jump', 'page'); break;
+    case 'm': case 'M': toggleMute(); break;
     case 't': case 'T': document.body.classList.toggle('no-translation'); break;
     default: return;
   }
@@ -426,6 +489,7 @@ window.pop.onCommand((cmd) => {
   applyAppearance();
   updateRepeatButton();
   updatePlayButton();
+  applyVolume();
   const w = await window.pop.getWindow();
   setPinUI(w.pinned);
   $('optOpacity').value = w.opacity;

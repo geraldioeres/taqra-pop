@@ -20,11 +20,11 @@ npm run dist
 - Frameless, resizable window that stays on top of other windows (toggle with 📌). It remembers its position, size and opacity.
 - Uthmani Arabic text in the Amiri Quran font. The Bismillah appears as a header above ayah 1, and each ayah ends with its number marker.
 - Optional translation: Indonesian (Kemenag), English (Sahih), Malay, Urdu, Turkish or French.
-- Per-ayah recitation from 8 reciters, with repeat (×1, 2, 3, 5, 10, ∞) and an option to move to the next ayah automatically.
-- Go-to panel: click the surah name, or press `G`, to search surahs and pick an ayah.
+- Per-ayah recitation from 8 reciters, with repeat (×1, 2, 3, 5, 10, ∞), an option to move to the next ayah automatically, and a volume slider with mute.
+- Go-to panel: click the surah name, or press `G`, to search surahs and pick an ayah. You can also jump to any page of the Madani mushaf (1–604) by pressing `P`.
 - Resumes where you left off, and counts how many ayahs you read today.
 - Dark, light and sepia themes, adjustable font sizes, and an option to hide the controls until you hover over the window.
-- Tray icon: close (✕) hides the window to the tray, and you quit from the tray menu.
+- ✕ closes the app. To tuck it away without closing, use Ctrl+Alt+Q or the tray icon.
 
 ## Shortcuts
 
@@ -34,7 +34,7 @@ npm run dist
 | Ctrl+Alt+→ / ← | Next / previous ayah |
 | Ctrl+Alt+P | Play / pause recitation |
 
-In the window: ←/→ for previous/next ayah, Space to play/pause, `T` to show or hide the translation, `G` to go to a surah/ayah, Esc to close a panel.
+In the window: ←/→ for previous/next ayah, Space to play/pause, `M` to mute, `T` to show or hide the translation, `G` to go to a surah/ayah, `P` to go to a page, Esc to close a panel.
 
 ## Data
 
