@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "start": "electron .",
+    "icon": "node scripts/make-icon.js",
     "dist": "electron-builder --win portable nsis"
   },
   "build": {
@@ -16,6 +17,7 @@
       "node_modules/@fontsource/amiri-quran/**/*"
     ],
     "win": {
+      "icon": "src/assets/icon.png",
       "target": [
         "nsis",
         "portable"
