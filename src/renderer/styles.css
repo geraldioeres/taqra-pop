@@ -5,6 +5,10 @@
 body[data-theme="dark"]  { --bg: #12161c; --bg2: #1b212a; --fg: #eef1f4; --muted: #8c96a3; --accent: #3fb68b; --gold: #e6c66e; --line: #2a323d; }
 body[data-theme="light"] { --bg: #fbfbf9; --bg2: #eef0ec; --fg: #1d2420; --muted: #6b7570; --accent: #1f7a5c; --gold: #9a7414; --line: #d9ddd6; }
 body[data-theme="sepia"] { --bg: #f4ecd8; --bg2: #e9dfc6; --fg: #3b2f1e; --muted: #85745a; --accent: #7a5b20; --gold: #9a6b12; --line: #d6c8a8; }
+/* word highlight under the reading pointer */
+body[data-theme="dark"]  { --hl: rgba(230, 198, 110, .20); }
+body[data-theme="light"] { --hl: rgba(31, 122, 92, .14); }
+body[data-theme="sepia"] { --hl: rgba(122, 91, 32, .16); }
 
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
@@ -65,6 +69,22 @@ button.primary { background: var(--accent); color: #fff; padding: 5px 14px; }
 }
 .arabic .bismillah { display: block; font-size: .8em; color: var(--muted); margin-bottom: .1em; }
 .arabic .end { color: var(--gold); font-size: .9em; white-space: nowrap; }
+
+/* Reading pointer: the tip (hotspot) sits just under-left of the word so the
+   pen body points away from the text. Outlined so it shows on every theme. */
+.arabic.ptr-pen {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M2 2 L10 5 L29 24 L24 29 L5 10 Z' fill='%23e6c66e' stroke='%23222' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M2 2 L5 10 L10 5 Z' fill='%23222'/%3E%3C/svg%3E") 2 2, pointer;
+}
+.arabic.ptr-dot {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='5' fill='%23e6c66e' fill-opacity='.85' stroke='%23222' stroke-width='1.5'/%3E%3C/svg%3E") 12 12, pointer;
+}
+.arabic .word { border-radius: 6px; transition: background-color .08s; }
+/* box-shadow widens the highlight without shifting the text */
+.arabic.hover-words .word:hover { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); }
+.arabic .word.marked {
+  background: var(--hl);
+  box-shadow: 0 0 0 3px var(--hl), inset 0 -3px 0 var(--gold);
+}
 .translation {
   font-size: var(--tr-size); color: var(--muted); text-align: center;
   margin: 0 0 auto; line-height: 1.55;
