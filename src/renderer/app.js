@@ -14,6 +14,9 @@ const DEFAULTS = {
   theme: 'dark',
   autoNext: true,
   autoHide: false,
+  pointer: 'pen', // 'pen' | 'dot' | '' (normal cursor)
+  hoverWord: true,
+  clickMark: true,
   repeat: 1,
   volume: 0.8,
   muted: false,
@@ -123,13 +126,16 @@ async function show(surah, ayah, { autoplay = false } = {}) {
     const arEl = $('arabic');
     arEl.replaceChildren();
     const text = typeof row.t === 'string' ? row.t : row.t.rest;
+    let wordIndex = 0;
     if (typeof row.t !== 'string') {
       const b = document.createElement('span');
       b.className = 'bismillah';
-      b.textContent = row.t.bism;
+      wordIndex = appendWords(b, row.t.bism, wordIndex);
       arEl.append(b);
     }
-    arEl.append(text + ' ');
+    appendWords(arEl, text, wordIndex);
+    arEl.append(' ');
+    applyMark();
     const end = document.createElement('span');
     end.className = 'end';
     end.textContent = `﴿${toArabicDigits(ayah)}﴾`;
@@ -158,6 +164,57 @@ async function show(surah, ayah, { autoplay = false } = {}) {
     if (token === renderToken && !status.classList.contains('error')) status.textContent = '';
   }
 }
+
+// ---------- words: hover highlight & "keep my place" marker ----------
+// A token is a word if it has an Arabic letter; standalone waqf marks
+// (e.g. ۛ ۖ) come through as their own tokens and are not selectable.
+const HAS_LETTER = /[ء-يٮ-ۓۺ-ۼ]/;
+
+/** Appends space-separated tokens as spans; returns the next word index. */
+function appendWords(parent, text, index) {
+  text.split(' ').filter(Boolean).forEach((tok, i) => {
+    if (i) parent.append(' ');
+    const span = document.createElement('span');
+    span.textContent = tok;
+    if (HAS_LETTER.test(tok)) {
+      span.className = 'word';
+      span.dataset.w = index++;
+    } else {
+      span.className = 'waqf';
+    }
+    parent.append(span);
+  });
+  return index;
+}
+
+// The marker is saved so it survives a restart, but moving to another
+// ayah clears it.
+function applyMark() {
+  const mark = store.get('mark', null);
+  if (!mark || !current) return;
+  if (mark.surah !== current.surah || mark.ayah !== current.ayah) {
+    store.set('mark', null);
+    return;
+  }
+  $('arabic').querySelector(`.word[data-w="${mark.w}"]`)?.classList.add('marked');
+}
+
+$('arabic').addEventListener('click', (e) => {
+  if (!settings.clickMark || !current) return;
+  const word = e.target.closest('.word');
+  if (!word) return;
+  // Don't treat the end of a text selection as a click on a word.
+  if (!window.getSelection().isCollapsed) return;
+  const w = Number(word.dataset.w);
+  const wasMarked = word.classList.contains('marked');
+  for (const el of $('arabic').querySelectorAll('.marked')) el.classList.remove('marked');
+  if (wasMarked) {
+    store.set('mark', null);
+  } else {
+    word.classList.add('marked');
+    store.set('mark', { surah: current.surah, ayah: current.ayah, w });
+  }
+});
 
 function step(delta, opts) {
   let { surah, ayah } = settings;
@@ -429,6 +486,11 @@ function applyAppearance() {
   document.documentElement.style.setProperty('--tr-size', `${settings.trSize}px`);
   document.body.classList.toggle('autohide', settings.autoHide);
   document.body.classList.toggle('no-translation', !settings.translation);
+  const ar = $('arabic');
+  ar.classList.toggle('ptr-pen', settings.pointer === 'pen');
+  ar.classList.toggle('ptr-dot', settings.pointer === 'dot');
+  ar.classList.toggle('hover-words', settings.hoverWord);
+  ar.classList.toggle('click-mark', settings.clickMark);
 }
 
 function bindSetting(id, key, { parse = (v) => v, prop = 'value', onChange } = {}) {
@@ -451,6 +513,17 @@ bindSetting('optTrSize', 'trSize', { parse: Number });
 bindSetting('optTheme', 'theme');
 bindSetting('optAutoNext', 'autoNext', { prop: 'checked' });
 bindSetting('optAutoHide', 'autoHide', { prop: 'checked' });
+bindSetting('optPointer', 'pointer');
+bindSetting('optHoverWord', 'hoverWord', { prop: 'checked' });
+bindSetting('optClickMark', 'clickMark', {
+  prop: 'checked',
+  // Turning the feature off also removes any marker that's showing.
+  onChange: () => {
+    if (settings.clickMark) return;
+    store.set('mark', null);
+    for (const el of $('arabic').querySelectorAll('.marked')) el.classList.remove('marked');
+  },
+});
 
 $('optOpacity').addEventListener('input', (e) => window.pop.setOpacity(Number(e.target.value)));
 

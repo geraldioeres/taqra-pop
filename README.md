@@ -22,6 +22,7 @@ npm run dist
 - Optional translation: Indonesian (Kemenag), English (Sahih), Malay, Urdu, Turkish or French.
 - Per-ayah recitation from 8 reciters, with repeat (×1, 2, 3, 5, 10, ∞), an option to move to the next ayah automatically, and a volume slider with mute.
 - Go-to panel: click the surah name, or press `G`, to search surahs and pick an ayah. You can also jump to any page of the Madani mushaf (1–604) by pressing `P`.
+- Reading pointer: over the Arabic text the cursor becomes a pen (or a dot), and the word under it is highlighted so you can follow along as you recite. Click a word to leave a marker that keeps your place, even after a restart; moving to another ayah clears it. Each part can be turned off in Settings.
 - Resumes where you left off, and counts how many ayahs you read today.
 - Dark, light and sepia themes, adjustable font sizes, and an option to hide the controls until you hover over the window.
 - ✕ closes the app. To tuck it away without closing, use Ctrl+Alt+Q or the tray icon.
