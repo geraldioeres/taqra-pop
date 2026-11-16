@@ -1,0 +1,41 @@
+# Taqra Pop
+
+A small floating Quran reader for Windows. It shows one ayah at a time in a window that stays on top of your other apps, so you can recite while you work.
+
+## Run
+
+```bash
+npm install
+npm start
+```
+
+Build an installer and a portable `.exe` into `dist/`:
+
+```bash
+npm run dist
+```
+
+## Features
+
+- Frameless, resizable window that stays on top of other windows (toggle with 📌). It remembers its position, size and opacity.
+- Uthmani Arabic text in the Amiri Quran font. The Bismillah appears as a header above ayah 1, and each ayah ends with its number marker.
+- Optional translation: Indonesian (Kemenag), English (Sahih), Malay, Urdu, Turkish or French.
+- Per-ayah recitation from 8 reciters, with repeat (×1, 2, 3, 5, 10, ∞) and an option to move to the next ayah automatically.
+- Go-to panel: click the surah name, or press `G`, to search surahs and pick an ayah.
+- Resumes where you left off, and counts how many ayahs you read today.
+- Dark, light and sepia themes, adjustable font sizes, and an option to hide the controls until you hover over the window.
+- Tray icon: close (✕) hides the window to the tray, and you quit from the tray menu.
+
+## Shortcuts
+
+| Global (works from any app) | |
+|---|---|
+| Ctrl+Alt+Q | Show / hide |
+| Ctrl+Alt+→ / ← | Next / previous ayah |
+| Ctrl+Alt+P | Play / pause recitation |
+
+In the window: ←/→ for previous/next ayah, Space to play/pause, `T` to show or hide the translation, `G` to go to a surah/ayah, Esc to close a panel.
+
+## Data
+
+The text, translations and audio come from [alquran.cloud](https://alquran.cloud) and `cdn.islamic.network`. Each surah is downloaded the first time you open it and then cached, so text works offline after that. Audio is streamed and always needs a connection.
