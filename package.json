@@ -1,6 +1,6 @@
 {
   "name": "taqra-pop",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Floating always-on-top Quran reader — one ayah at a time while you work.",
   "main": "src/main.js",
   "private": true,
