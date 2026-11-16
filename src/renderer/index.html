@@ -18,7 +18,7 @@
       <button id="btnPin" class="icon" title="Always on top">📌</button>
       <button id="btnSettings" class="icon" title="Settings">⚙</button>
       <button id="btnMin" class="icon" title="Minimize">–</button>
-      <button id="btnHide" class="icon" title="Hide to tray (Ctrl+Alt+Q to bring back)">✕</button>
+      <button id="btnClose" class="icon close-app" title="Close Taqra Pop">✕</button>
     </div>
   </header>
 
@@ -33,6 +33,10 @@
     <button id="btnPlay" class="play" title="Play / pause recitation (Space)">▶</button>
     <button id="btnNext" title="Next ayah (→)">›</button>
     <button id="btnRepeat" class="pill" title="Repeat each ayah">×1</button>
+    <span class="volume">
+      <button id="btnMute" class="mute" title="Mute (M)">🔊</button>
+      <input id="volume" type="range" min="0" max="1" step="0.05" title="Volume" aria-label="Volume">
+    </span>
     <span class="spacer"></span>
     <span id="today" class="today" title="Ayahs read today"></span>
   </footer>
@@ -43,7 +47,14 @@
       <strong>Go to</strong>
       <button class="icon close" data-close="jump">✕</button>
     </div>
-    <input id="surahFilter" type="search" placeholder="Search surah (name or number)…" autocomplete="off">
+    <div class="row">
+      <label>Page <input id="pageInput" type="number" min="1" max="604"></label>
+      <span class="muted">of 604</span>
+      <span id="pageStart" class="muted page-start"></span>
+      <span class="spacer"></span>
+      <button id="btnGoPage" class="primary">Go</button>
+    </div>
+    <input id="surahFilter" type="search" placeholder="…or search surah (name or number)" autocomplete="off">
     <ul id="surahList" class="surah-list"></ul>
     <div class="row">
       <label>Ayah <input id="ayahInput" type="number" min="1" value="1"></label>
@@ -96,11 +107,12 @@
     <label class="check"><input id="optAutoHide" type="checkbox"> Hide controls until hovered</label>
     <p class="muted small">
       Shortcuts (work anywhere): Ctrl+Alt+Q show/hide · Ctrl+Alt+→ next · Ctrl+Alt+← previous · Ctrl+Alt+P play.<br>
-      In window: ←/→ ayah · Space play · T translation · G go to.
+      In window: ←/→ ayah · Space play · M mute · T translation · G go to · P go to page.
     </p>
   </section>
 
   <script src="surahs.js"></script>
+  <script src="pages.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
