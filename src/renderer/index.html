@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; connect-src https://api.alquran.cloud; media-src https://cdn.islamic.network https://everyayah.com; font-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:">
+  <title>Taqra Pop</title>
+  <link rel="stylesheet" href="../../node_modules/@fontsource/amiri-quran/index.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-theme="dark">
+  <header class="titlebar">
+    <div class="where" id="where" title="Click to jump to a surah/ayah">
+      <span id="surahName">—</span>
+      <span class="ref" id="ayahRef"></span>
+    </div>
+    <div class="win-buttons">
+      <button id="btnPin" class="icon" title="Always on top">📌</button>
+      <button id="btnSettings" class="icon" title="Settings">⚙</button>
+      <button id="btnMin" class="icon" title="Minimize">–</button>
+      <button id="btnHide" class="icon" title="Hide to tray (Ctrl+Alt+Q to bring back)">✕</button>
+    </div>
+  </header>
+
+  <main id="reader">
+    <div id="arabic" class="arabic" dir="rtl" lang="ar"></div>
+    <div id="translation" class="translation"></div>
+    <div id="status" class="status"></div>
+  </main>
+
+  <footer class="controls">
+    <button id="btnPrev" title="Previous ayah (←)">‹</button>
+    <button id="btnPlay" class="play" title="Play / pause recitation (Space)">▶</button>
+    <button id="btnNext" title="Next ayah (→)">›</button>
+    <button id="btnRepeat" class="pill" title="Repeat each ayah">×1</button>
+    <span class="spacer"></span>
+    <span id="today" class="today" title="Ayahs read today"></span>
+  </footer>
+
+  <!-- Jump panel -->
+  <section id="jump" class="panel" hidden>
+    <div class="panel-head">
+      <strong>Go to</strong>
+      <button class="icon close" data-close="jump">✕</button>
+    </div>
+    <input id="surahFilter" type="search" placeholder="Search surah (name or number)…" autocomplete="off">
+    <ul id="surahList" class="surah-list"></ul>
+    <div class="row">
+      <label>Ayah <input id="ayahInput" type="number" min="1" value="1"></label>
+      <span id="ayahMax" class="muted"></span>
+      <span class="spacer"></span>
+      <button id="btnGo" class="primary">Go</button>
+    </div>
+  </section>
+
+  <!-- Settings panel -->
+  <section id="settings" class="panel" hidden>
+    <div class="panel-head">
+      <strong>Settings</strong>
+      <button class="icon close" data-close="settings">✕</button>
+    </div>
+    <label class="field">Translation
+      <select id="optTranslation">
+        <option value="">None</option>
+        <option value="id.indonesian">Indonesian — Kemenag</option>
+        <option value="en.sahih">English — Sahih International</option>
+        <option value="ms.basmeih">Malay — Basmeih</option>
+        <option value="ur.jalandhry">Urdu — Jalandhry</option>
+        <option value="tr.diyanet">Turkish — Diyanet</option>
+        <option value="fr.hamidullah">French — Hamidullah</option>
+      </select>
+    </label>
+    <label class="field">Reciter
+      <select id="optReciter">
+        <option value="ar.alafasy">Mishary Alafasy</option>
+        <option value="ar.husary">Mahmoud Al-Husary</option>
+        <option value="ar.minshawi">Al-Minshawi</option>
+        <option value="ar.abdulbasitmurattal">Abdul Basit (Murattal)</option>
+        <option value="ar.abdurrahmaansudais">Abdurrahmaan As-Sudais</option>
+        <option value="ar.mahermuaiqly">Maher Al-Muaiqly</option>
+        <option value="ar.shaatree">Abu Bakr Ash-Shaatree</option>
+        <option value="ar.hudhaify">Ali Al-Hudhaify</option>
+      </select>
+    </label>
+    <label class="field">Arabic size <input id="optArSize" type="range" min="18" max="64" step="1"></label>
+    <label class="field">Translation size <input id="optTrSize" type="range" min="10" max="28" step="1"></label>
+    <label class="field">Window opacity <input id="optOpacity" type="range" min="0.3" max="1" step="0.05"></label>
+    <label class="field">Theme
+      <select id="optTheme">
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="sepia">Sepia</option>
+      </select>
+    </label>
+    <label class="check"><input id="optAutoNext" type="checkbox"> Auto-advance after recitation ends</label>
+    <label class="check"><input id="optAutoHide" type="checkbox"> Hide controls until hovered</label>
+    <p class="muted small">
+      Shortcuts (work anywhere): Ctrl+Alt+Q show/hide · Ctrl+Alt+→ next · Ctrl+Alt+← previous · Ctrl+Alt+P play.<br>
+      In window: ←/→ ayah · Space play · T translation · G go to.
+    </p>
+  </section>
+
+  <script src="surahs.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

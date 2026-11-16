@@ -1,0 +1,32 @@
+{
+  "name": "taqra-pop",
+  "version": "0.1.0",
+  "description": "Floating always-on-top Quran reader — one ayah at a time while you work.",
+  "main": "src/main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable nsis"
+  },
+  "build": {
+    "appId": "com.taqrapop.app",
+    "productName": "Taqra Pop",
+    "files": [
+      "src/**/*",
+      "node_modules/@fontsource/amiri-quran/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    }
+  },
+  "dependencies": {
+    "@fontsource/amiri-quran": "5.3.0"
+  },
+  "devDependencies": {
+    "electron": "45.3.2",
+    "electron-builder": "26.18.0"
+  }
+}
