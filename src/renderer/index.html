@@ -15,12 +15,18 @@
       <span class="ref" id="ayahRef"></span>
     </div>
     <div class="win-buttons">
+      <button id="btnNotes" class="icon notes-btn" title="Mistake notes (N)" aria-label="Mistake notes">📝<span id="notesBadge" class="badge" hidden></span></button>
       <button id="btnPin" class="icon" title="Always on top">📌</button>
       <button id="btnSettings" class="icon" title="Settings">⚙</button>
       <button id="btnMin" class="icon" title="Minimize">–</button>
       <button id="btnClose" class="icon close-app" title="Close Taqra Pop">✕</button>
     </div>
   </header>
+
+  <div id="practiceBar" class="practice-bar" hidden>
+    <span id="practiceLabel"></span>
+    <button id="btnPracticeExit" title="Leave practice mode">Exit</button>
+  </div>
 
   <main id="reader">
     <div id="arabic" class="arabic" dir="rtl" lang="ar"></div>
@@ -63,6 +69,53 @@
       <button id="btnGo" class="primary">Go</button>
     </div>
   </section>
+
+  <!-- Mistake notes list -->
+  <section id="notesPanel" class="panel" hidden>
+    <div class="panel-head">
+      <span><strong>Mistake notes</strong> <span id="notesSummary" class="muted small-inline"></span></span>
+      <button class="icon close" data-close="notesPanel">✕</button>
+    </div>
+    <div class="notes-filters">
+      <select id="notesStatus" aria-label="Filter by status">
+        <option value="open">Open</option>
+        <option value="fixed">Fixed</option>
+        <option value="all">All</option>
+      </select>
+      <select id="notesType" aria-label="Filter by mistake type"><option value="">All types</option></select>
+      <select id="notesSurah" aria-label="Filter by surah"><option value="0">All surahs</option></select>
+    </div>
+    <p id="notesEmpty" class="muted notes-empty" hidden></p>
+    <ul id="notesList" class="notes-list"></ul>
+    <div class="row">
+      <button id="btnExportNotes" title="Save a backup of your notes">Export</button>
+      <button id="btnImportNotes" title="Add notes from a backup; nothing is removed">Import</button>
+      <span class="spacer"></span>
+      <button id="btnPractice" class="primary">Practice</button>
+    </div>
+  </section>
+
+  <!-- Add / edit one mistake -->
+  <section id="noteEditor" class="panel" hidden>
+    <div class="panel-head">
+      <strong id="editorTitle"></strong>
+      <button id="btnEditorClose" class="icon close" aria-label="Close">✕</button>
+    </div>
+    <div id="editorWords" class="editor-words" dir="rtl" lang="ar"></div>
+    <div id="editorTabs" class="chips" aria-label="Mistakes on this word" hidden></div>
+    <div id="editorTypes" class="chips" aria-label="Mistake type"></div>
+    <textarea id="editorNote" rows="3" dir="auto" maxlength="2000" aria-label="Note"
+              placeholder="What went wrong? e.g. hold the ghunnah for 2 counts"></textarea>
+    <label id="editorFixedRow" class="check"><input id="editorFixed" type="checkbox"> Fixed: I can recite this correctly now</label>
+    <div class="row">
+      <button id="btnNoteDelete" class="danger">Delete</button>
+      <span class="spacer"></span>
+      <button id="btnNoteCancel">Cancel</button>
+      <button id="btnNoteSave" class="primary" title="Save (Ctrl+Enter)">Save</button>
+    </div>
+  </section>
+
+  <div id="toast" class="toast" role="status" hidden></div>
 
   <!-- Settings panel -->
   <section id="settings" class="panel" hidden>
@@ -137,12 +190,14 @@
     <label class="check"><input id="optAutoHide" type="checkbox"> Hide controls until hovered</label>
     <p class="muted small">
       Shortcuts (work anywhere): Ctrl+Alt+Q show/hide · Ctrl+Alt+→ next · Ctrl+Alt+← previous · Ctrl+Alt+P play.<br>
-      In window: ←/→ ayah · Space play · M mute · T translation · G go to · P go to page.
+      In window: ←/→ ayah · Space play · M mute · T translation · G go to · P go to page · N mistake notes.<br>
+      Right-click a word (or drag across words first) to note a mistake.
     </p>
   </section>
 
   <script src="surahs.js"></script>
   <script src="pages.js"></script>
+  <script src="notes.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -81,6 +81,18 @@ button.primary { background: var(--accent); color: #fff; padding: 5px 14px; }
 .arabic .word { border-radius: 6px; transition: background-color .08s; }
 /* box-shadow widens the highlight without shifting the text */
 .arabic.hover-words .word:hover { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); }
+/* Mistake highlights. An inline border doesn't change the line height. */
+[data-mistake="makhraj"] { --mc: #e5484d; }
+[data-mistake="tajwid"]  { --mc: #3b82f6; }
+[data-mistake="mad"]     { --mc: #a855f7; }
+[data-mistake="harakat"] { --mc: #f59e0b; }
+[data-mistake="hafalan"] { --mc: #10b981; }
+[data-mistake="other"]   { --mc: #8c96a3; }
+.arabic .word.mistake {
+  background: color-mix(in srgb, var(--mc) 26%, transparent);
+  border-bottom: 3px solid var(--mc);
+}
+.arabic .word.mistake-fixed { border-bottom: 2px dotted color-mix(in srgb, var(--mc) 60%, transparent); }
 .arabic .word.marked {
   background: var(--hl);
   box-shadow: 0 0 0 3px var(--hl), inset 0 -3px 0 var(--gold);
@@ -148,3 +160,61 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
 .surah-list li.sel .muted { color: #e8f5ef; }
 .surah-list .num { width: 26px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .surah-list .ar { margin-left: auto; font-family: "Amiri Quran", serif; font-size: 15px; }
+
+/* --- mistake notes --- */
+.notes-btn { position: relative; }
+.badge {
+  position: absolute; top: -1px; right: -2px; min-width: 13px; height: 13px; padding: 0 3px;
+  border-radius: 7px; background: #e5484d; color: #fff;
+  font-size: 9px; font-weight: 700; line-height: 13px; text-align: center;
+}
+.badge[hidden], .practice-bar[hidden], .toast[hidden], .chips[hidden], .check[hidden],
+.notes-empty[hidden], button[hidden] { display: none; }
+.practice-bar {
+  flex: none; display: flex; align-items: center; justify-content: space-between;
+  padding: 1px 6px 1px 12px; background: var(--hl); font-size: 12px; font-weight: 600;
+}
+.practice-bar button { padding: 1px 8px; font-size: 12px; }
+.small-inline { font-size: 11.5px; margin-left: 4px; }
+.notes-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.notes-filters select { min-width: 0; padding: 3px 4px; }
+.notes-empty { flex: 1; margin: 12px 0; text-align: center; }
+.notes-list { list-style: none; margin: 0; padding: 0; flex: 1; min-height: 60px; overflow-y: auto; }
+.notes-list:empty { display: none; }
+.note-row { display: flex; align-items: flex-start; gap: 2px; border-bottom: 1px solid var(--line); }
+.note-row.is-fixed .note-jump { opacity: .6; }
+.note-jump {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px;
+  padding: 5px 6px; text-align: left; border-radius: 4px;
+}
+.note-head { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.note-words { font-family: "Amiri Quran", serif; font-size: 18px; line-height: 2; text-align: start; }
+.notes-list::-webkit-scrollbar { width: 6px; }
+.notes-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+.note-body { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.note-actions { flex: none; display: flex; padding-top: 3px; }
+.type-dot { flex: none; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--mc); }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; font-size: 12px;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 12px;
+}
+.chip[aria-pressed="true"] { border-color: var(--mc, var(--accent)); box-shadow: inset 0 0 0 1px var(--mc, var(--accent)); font-weight: 600; }
+.editor-words {
+  flex: none; font-family: "Amiri Quran", serif; font-size: 22px; line-height: 2;
+  text-align: center; background: var(--bg2); border-radius: 6px; padding: 0 8px;
+}
+#editorTitle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+textarea {
+  flex: none; width: 100%; resize: vertical; font: inherit; color: var(--fg); background: var(--bg2);
+  border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; user-select: text;
+}
+textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+button.danger { color: #e5484d; }
+button:disabled { opacity: .45; cursor: default; }
+.toast {
+  position: fixed; left: 10px; right: 10px; bottom: 42px; z-index: 20; padding: 6px 10px;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 6px;
+  font-size: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+}
+.toast.error { color: #e5484d; }

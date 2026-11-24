@@ -1,8 +1,10 @@
-const { app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, nativeImage, screen } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, globalShortcut, Tray, Menu, nativeImage, screen } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const notesStore = require('./notes-store');
 
 const STATE_FILE = () => path.join(app.getPath('userData'), 'window-state.json');
+const NOTES_FILE = () => path.join(app.getPath('userData'), 'mistake-notes.json');
 const DEFAULT_STATE = { width: 440, height: 320, pinned: true, opacity: 1 };
 
 let win = null;
@@ -143,6 +145,52 @@ ipcMain.on('win:opacity', (_e, v) => {
 ipcMain.on('win:minimize', () => win?.minimize());
 ipcMain.on('win:hide', () => win?.hide());
 ipcMain.on('win:quit', () => app.quit());
+
+// ---------- mistake notes ----------
+ipcMain.handle('notes:load', () => {
+  try {
+    return { ok: true, ...notesStore.readNotes(NOTES_FILE()) };
+  } catch (e) {
+    return { ok: false, notes: [], error: e.message };
+  }
+});
+ipcMain.handle('notes:save', (_e, notes) => {
+  try {
+    notesStore.writeNotes(NOTES_FILE(), notes);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+});
+ipcMain.handle('notes:export', async () => {
+  try {
+    const { notes } = notesStore.readNotes(NOTES_FILE());
+    const day = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
+    const { canceled, filePath } = await dialog.showSaveDialog(win, {
+      title: 'Export mistake notes',
+      defaultPath: path.join(app.getPath('documents'), `taqra-pop-notes-${day}.json`),
+      filters: [{ name: 'Taqra Pop notes', extensions: ['json'] }],
+    });
+    if (canceled || !filePath) return { ok: true, canceled: true };
+    fs.writeFileSync(filePath, notesStore.serialize(notes));
+    return { ok: true, count: notes.length };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+});
+ipcMain.handle('notes:import', async () => {
+  try {
+    const { canceled, filePaths } = await dialog.showOpenDialog(win, {
+      title: 'Import mistake notes',
+      properties: ['openFile'],
+      filters: [{ name: 'Taqra Pop notes', extensions: ['json'] }],
+    });
+    if (canceled || !filePaths?.length) return { ok: true, canceled: true };
+    return { ok: true, ...notesStore.readImportFile(filePaths[0]) };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+});
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
