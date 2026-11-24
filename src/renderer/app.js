@@ -17,6 +17,7 @@ const DEFAULTS = {
   pointer: 'pen', // 'pen' | 'dot' | '' (normal cursor)
   hoverWord: true,
   clickMark: true,
+  lastMistakeType: 'tajwid',
   repeat: 1,
   volume: 0.8,
   muted: false,
@@ -148,6 +149,8 @@ async function show(surah, ayah, { autoplay = false } = {}) {
       arEl.append(sj);
     }
 
+    applyMistakes();
+
     $('translation').textContent = tr ? tr[ayah - 1] : '';
     $('ayahRef').textContent = `${surah}:${ayah} · Juz ${row.j} · p.${row.p}`;
     $('reader').scrollTop = 0;
@@ -217,6 +220,7 @@ $('arabic').addEventListener('click', (e) => {
 });
 
 function step(delta, opts) {
+  if (practice.on) return practiceStep(delta, opts);
   let { surah, ayah } = settings;
   ayah += delta;
   if (ayah < 1) {
@@ -324,7 +328,8 @@ audio.addEventListener('ended', () => {
     audio.play().catch(() => {});
     return;
   }
-  if (settings.autoNext && !(settings.surah === 114 && settings.ayah === 6)) {
+  const atEnd = practice.on ? isLastPracticeStop() : settings.surah === 114 && settings.ayah === 6;
+  if (settings.autoNext && !atEnd) {
     step(1); // wantPlaying stays true, so show() continues playback
   } else {
     audio.wantPlaying = false;
@@ -384,6 +389,7 @@ function openPanel(id, focus) {
   for (const p of document.querySelectorAll('.panel')) p.hidden = p.id !== id;
   document.body.classList.add('panel-open');
   if (id === 'jump') openJump(focus);
+  if (id === 'notesPanel') renderNotesPanel();
 }
 function closePanels() {
   for (const p of document.querySelectorAll('.panel')) p.hidden = true;
@@ -553,7 +559,11 @@ $('btnRepeat').addEventListener('click', () => {
 
 // ---------- keyboard ----------
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && anyPanelOpen()) { closePanels(); return; }
+  if (e.key === 'Escape' && anyPanelOpen()) {
+    if (!$('noteEditor').hidden) closeEditor();
+    else closePanels();
+    return;
+  }
   if (anyPanelOpen() || e.target.matches('input, select, textarea')) return;
   if (e.ctrlKey || e.altKey || e.metaKey) return;
   switch (e.key) {
@@ -563,6 +573,7 @@ document.addEventListener('keydown', (e) => {
     case 'g': case 'G': openPanel('jump'); break;
     case 'p': case 'P': openPanel('jump', 'page'); break;
     case 'm': case 'M': toggleMute(); break;
+    case 'n': case 'N': openPanel('notesPanel'); break;
     case 't': case 'T': document.body.classList.toggle('no-translation'); break;
     default: return;
   }
@@ -586,5 +597,6 @@ window.pop.onCommand((cmd) => {
   const w = await window.pop.getWindow();
   setPinUI(w.pinned);
   $('optOpacity').value = w.opacity;
+  await setupNotes();
   show(settings.surah, settings.ayah);
 })();

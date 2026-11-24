@@ -23,6 +23,7 @@ npm run dist
 - Per-ayah recitation from 8 reciters, with repeat (×1, 2, 3, 5, 10, ∞), an option to move to the next ayah automatically, and a volume slider with mute.
 - Go-to panel: click the surah name, or press `G`, to search surahs and pick an ayah. You can also jump to any page of the Madani mushaf (1–604) by pressing `P`.
 - Reading pointer: over the Arabic text the cursor becomes a pen (or a dot), and the word under it is highlighted so you can follow along as you recite. Click a word to leave a marker that keeps your place, even after a restart; moving to another ayah clears it. Each part can be turned off in Settings.
+- Mistake notes: right-click a word (or drag across several first) to record a mistake with a type (Makhraj, Tajwid, Mad, Harakat, Hafalan, Other) and a note. Press `N` to review, filter and mark mistakes as fixed, or start Practice to go through only the ayahs with open mistakes. Notes are stored in `mistake-notes.json` in the app's data folder, and Export/Import makes backups.
 - Resumes where you left off, and counts how many ayahs you read today.
 - Dark, light and sepia themes, adjustable font sizes, and an option to hide the controls until you hover over the window.
 - ✕ closes the app. To tuck it away without closing, use Ctrl+Alt+Q or the tray icon.
@@ -35,7 +36,7 @@ npm run dist
 | Ctrl+Alt+→ / ← | Next / previous ayah |
 | Ctrl+Alt+P | Play / pause recitation |
 
-In the window: ←/→ for previous/next ayah, Space to play/pause, `M` to mute, `T` to show or hide the translation, `G` to go to a surah/ayah, `P` to go to a page, Esc to close a panel.
+In the window: ←/→ for previous/next ayah, Space to play/pause, `M` to mute, `T` to show or hide the translation, `G` to go to a surah/ayah, `P` to go to a page, `N` for mistake notes, Esc to close a panel. Ctrl+Enter saves a note.
 
 ## Data
 
